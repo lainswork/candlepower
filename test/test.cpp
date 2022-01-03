@@ -1,6 +1,4 @@
 #include <iostream>
-
-#define SPDLOG_ACTIVE_LEVEL 1
 #include <spdlog/spdlog.h>
 #include <nlohmann/json.hpp>
 
@@ -118,12 +116,9 @@ namespace http_rpc {
 			try {
 				ret = json_t::parse(str);
 			}
-			catch (std::exception& e) {
-				SPDLOG_WARN(_TEXT("参数解包失败 要求类型<{:s}> 原文{:s}  原因:{:s}"),
-					tuple_type_print<decltype(ret), tuple_get_num(ret)>::print(&ret), str,e.what());
-			}
 			catch (...) {
-				SPDLOG_WARN(_TEXT("未知异常"));
+				spdlog::warn("args unpack erro! The required parameter list is: <{:s}> \tbut json array is:{:s}",
+					tuple_type_print<decltype(ret), tuple_get_num(ret)>::print(&ret), str);
 			}
 			return ret;
 		}
@@ -253,8 +248,9 @@ public:
 } // namespace rpc_service
 
 using namespace http_rpc;
+using string_t = std::string;
 
-int add(void*,int a ,int b,float) {
+int add(void*,int a ,int b,float, string_t) {
 
 	return a + b;
 }
@@ -286,7 +282,7 @@ int main()
 	auto msg = argpack::pack(1,2);
 	
 	
-	SPDLOG_INFO(_TEXT("假如这个是客户端传来的参数 {:s}"), msg);
+	spdlog::info(_TEXT("假如这个是客户端传来的参数 {:s}"), msg);
 
 
 
@@ -306,10 +302,10 @@ int main()
 
 	//手动调用函数来试一下  nullptr 是类似tcp连接上下文的东西，这里用不到
 	rout.map_invokers_["add"](nullptr, msg.data(), msg.size(), res);
-	SPDLOG_INFO("{:s}", res);
+	spdlog::info("{:s}", res);
 
 	rout.map_invokers_["sub"](nullptr, msg.data(), msg.size(), res);
-	SPDLOG_INFO("{:s}", res);
+	spdlog::info("{:s}", res);
 
 	return 0;
 }

@@ -7,7 +7,7 @@
 #include <spdlog/spdlog.h>
 #include <fmt/format.h>
 
-#include "serverfun.h"
+#include "server.h"
 
 
 namespace fs = std::filesystem;
