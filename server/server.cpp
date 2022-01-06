@@ -1,5 +1,10 @@
 ﻿#include <iostream>
 #include <filesystem>
+
+#include <uwebsockets/App.h>
+#include <uwebsockets/WebSocket.h>
+#include <uwebsockets/PerMessageDeflate.h>
+
 #include <workflow/WFHttpServer.h>
 #include <workflow/WFMySQLServer.h>
 #include <workflow/MySQLResult.h>
@@ -37,27 +42,41 @@ int main()
 #ifdef WIN32
     //设置控制台为 utf8
     std::system("CHCP 65001");
+   
 #endif // WIN32
 
-   
-    json test_json = json::parse(R"(["89","100","200"])");;
-  
-    SPDLOG_INFO(_TEXT("{:s}"), (std::string)test_json[2]);
+    spdlog::set_level(spdlog::level::debug);
 
-    return 0;
+    std::thread([]() {
+        uWS::App ServerApp;
+        ServerApp.get("/*", [](auto* res, auto* req) {
+            spdlog::info(_TEXT("GET 请求"));
+            spdlog::info(req->getUrl());
+            res->cork([&]() {
+                res->end("This Http response will be properly corked and efficient in all cases");
+                });
+            });
+
+        ServerApp.listen(8887, [](auto* token) {
+            if (token) {
+                spdlog::info("over HTTP {:d}", 8887);
+            }
+            else
+            {
+                spdlog::error("over HTTP {:d}", 8887);
+            }
+            });
+
+        ServerApp.run();
+        
+        }).detach();
+    
 
 
 
 
 
-  
-
-
-
-
-
-
-    SPDLOG_INFO(_TEXT("服务端启动: {:s}"),fs::current_path().generic_string());
+    spdlog::info(_TEXT("服务端启动: {:s}"),fs::current_path().generic_string());
 
 
     WFHttpServer server([](WFHttpTask *pHttpReqTask) {
@@ -99,6 +118,11 @@ int main()
 
 
     if (server.start(8889) == 0) {
+
+
+
+
+
 
         do {
             std::string cmd;
