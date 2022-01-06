@@ -1,0 +1,204 @@
+
+/*
+  服务器的配置项
+  具体其他设置可以查看Drogon的wiki文档
+  https://github.com/drogonframework/drogon/wiki
+
+*/
+
+
+
+{
+  // 监听选项 这里可以监听多个端口
+  "listeners": [
+    {
+      // http监听地址
+      "address": "0.0.0.0",
+      // 监听端口
+      "port": 80,
+      //是否启用ssl(https)
+      "https": false
+    }
+  ],
+
+  // 数据库设置
+  "db_clients": [
+    {
+      // 连接名 默认为 default
+      //"name":"",
+      // 数据库类型 例如 postgresql,mysql or sqlite3, 默认为: "postgresql"
+      "rdbms": "postgresql",
+      // 如果用 Sqlite3 那么需要在这里设置db文件的名字
+      //"filename":"",
+      // host: 数据库连接地址
+      "host": "127.0.0.1",
+      // port: 数据库的连接端口
+      "port": 5432,
+      // dbname: 数据库名
+      "dbname": "candlepower",
+      // user: 数据库用户名 默认为 postgres
+      "user": "postgres",
+      // passwd: 数据库密码 默认为 空
+      "passwd": "990720",
+      // 快速数据库设置, 默认不开启，开启后要求所有后端操作都是 异步非阻塞 否则容易出问题
+      "is_fast": false,
+      // IO处理线程 默认为 4 根据 cpu 核心数来确定
+      "number_of_connections": 4,
+      // 执行数据库增删改查的超时时间 -1 表示不超时
+      "timeout": -1.0
+    }
+  ],
+
+  // 服务器设置
+  "app": {
+
+    // mime映射 详细请看 https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Basics_of_HTTP/MIME_types
+    "mime": {
+      "image/svg+xml": "svg",
+      "application/x-font-woff": [ "woff", "woff2" ],
+      "text/markdown": "md",
+      "text/gemini": [ "gmi", "gemini" ]
+    },
+
+    // IO处理线程 默认为 4 根据 cpu 核心数来确定
+    "number_of_threads": 4,
+    // 是否开启 session
+    "enable_session": true,
+    // session过期时间 单位秒
+    "session_timeout": 1200,
+    // 静态文件目录 (相对于exe的目录) 使用vs调试时一般exe的启动位置为 out/x64/debug/ 所以这里需要设置为 ../../../www/public 而不是./www/public 发行版需要写为后者
+    "document_root": "../../../www/public",
+    // 主页
+    "home_page": "index.html",
+    // 是否启用隐式页面
+    "use_implicit_page": true,
+    // 隐式页面名
+    "implicit_page": "index.html",
+    //static_file_headers: Headers for static files
+    /*"static_file_headers": [
+          {
+                "name": "field-name",
+                "value": "field-value"
+          }
+        ],*/
+
+    // 文件上传目录 如果以./开头则代表相对于exe的位置，如果以非./开头则代表 在document_root目录中的位置
+    "upload_path": "../../../www/uploads",
+    // 静态文件支持的所有类型 非以下类型的文件请求都会返回 404
+    "file_types": [
+      "gif",
+      "png",
+      "jpg",
+      "js",
+      "css",
+      "html",
+      "ico",
+      "swf",
+      "xap",
+      "apk",
+      "cur",
+      "svg",
+      "xml",
+      "woff",
+      "woff2"
+    ],
+    // 这里设置我看不懂
+    //locations: An array of locations of static files for GET requests.
+    "locations": [
+      {
+        //uri_prefix: The URI prefix of the location prefixed with "/", the default value is "" that disables the location.
+        //"uri_prefix": "/.well-known/acme-challenge/",
+        //default_content_type: The default content type of the static files without
+        //an extension. empty string by default.
+        "default_content_type": "text/plain",
+        //alias: The location in file system, if it is prefixed with "/", it 
+        //presents an absolute path, otherwise it presents a relative path to 
+        //the document_root path. 
+        //The default value is "" which means use the document root path as the location base path.
+        "alias": "",
+        //is_case_sensitive: indicates whether the URI prefix is case sensitive.
+        "is_case_sensitive": false,
+        //allow_all: true by default. If it is set to false, only static files with a valid extension can be accessed.
+        "allow_all": true,
+        //is_recursive: true by default. If it is set to false, files in sub directories can't be accessed.
+        "is_recursive": true,
+        //filters: string array, the filters applied to the location.
+        "filters": []
+      }
+    ],
+
+    // tcp 的最大连接数
+    "max_connections": 100000,
+    // 同一个ip的重复连接 0 代表不限制
+    "max_connections_per_ip": 0,
+    // 是否加载动态视图文件
+    "load_dynamic_views": false,
+    // 动态视图文件目录
+    "dynamic_views_path": [
+      "./views"
+    ],
+
+    "dynamic_views_output_path": "",
+
+    "enable_unicode_escaping_in_json": true,
+
+    "float_precision_in_json": {
+      "precision": 0,
+      "precision_type": "significant"
+    },
+
+    // 日志设置
+    "log": {
+      // 日志输出位置 不设置时日志会自动输出到控制台(标准输出)
+      //"log_path": "./",
+      // 日志文件的基础名
+      "logfile_base_name": "candlepower_log",
+      // 单个日志文件的大小限制
+      "log_size_limit": 100000000,
+      // 日志等级 默认 "DEBUG" ,可选:"TRACE","DEBUG","INFO","WARN"
+      "log_level": "DEBUG"
+    },
+
+    // 守护进程 程序会 自己启动自己并 守护 第二次启动的进程
+    "run_as_daemon": false,
+    // 监控进程 程序会 自己启动自己并 监控 第二次启动的进程
+    "handle_sig_term": false,
+    // 服务中止后 父进程是否要再次启动子进程
+    "relaunch_on_error": false,
+    // windows下本设置无用
+    "use_sendfile": true,
+    // 使用gzip压缩传输
+    "use_gzip": false,
+    // 使用 brotli 压缩传输
+    "use_brotli": false,
+    // 静态文件在内存中的缓存时间
+    "static_files_cache_time": 5,
+    // 链接超时 秒
+    "idle_connection_timeout": 60,
+    // http服务器头设置
+    "server_header_field": "",
+    // http是否开启服务器头
+    "enable_server_header": true,
+    // http是否开启日期头
+    "enable_date_header": true,
+    // 一个链接上进行的请求的次数限制， 0 为不限制
+    "keepalive_requests": 0,
+    // 管道缓冲区内的数据限制
+    "pipelining_requests": 0,
+    // 是否优先查找gzip压缩文件
+    "gzip_static": true,
+    // 是否优先查找br压缩文件
+    "br_static": true,
+    // 客户端链接body的最大值
+    "client_max_body_size": "1M",
+    // 客户端占用的最大内存
+    "client_max_memory_body_size": "64K",
+    // 客户端websocket消息的最大值
+    "client_max_websocket_message_size": "128K",
+    // 共享端口，同一个端口上可以运行多个进程
+    "reuse_port": false
+  },
+
+  //自定义设置 可以通过 app().getCustomConfig() 获取json对象
+  "custom_config": {}
+}
